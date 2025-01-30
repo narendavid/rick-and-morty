@@ -1,11 +1,5 @@
-const App = () => {
-  return (
-    <>
-      <h1 className="text-3xl font-bold underline">
-        Hello world!
-      </h1>
-    </>
-  )
-}
+import CharactersPage from "./modules/characters/pages/CharactersPage"
+
+const App = () => <CharactersPage />
 
 export default App

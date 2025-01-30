@@ -4,3 +4,13 @@ export interface Character {
     status: string;
     image: string;
 }
+
+export interface PaginatedResponse {
+    results: Character[];
+    info: {
+        next: string | null;
+        prev: string | null;
+        pages: number;
+        count: number;
+    };
+}

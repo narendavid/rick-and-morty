@@ -1,35 +1,33 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 
-interface FetchState<T> {
-    data: T | null;
-    loading: boolean;
-    error: string | null;
-}
+export function useFetch<T>(url: string, page: number, query: string) {
+    const [data, setData] = useState<T | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<number | null>(null);
 
-export function useFetch<T>(url: string) {
-    const [state, setState] = useState<FetchState<T>>({
-        data: null,
-        loading: true,
-        error: null,
-    });
+    const fetchData = async () => {
+        try {
+            setLoading(true);
+            setError(null);
+            const fetchUrl = query
+                ? `${url}?page=${page}&name=${query}`
+                : `${url}?page=${page}`;
+            const response = await fetch(fetchUrl)
+            if (!response.ok) {
+                setError(response.status)
+            }
+            const data = await response.json()
+            setData(data);
+        } catch (error: any) {
+            console.error(error);
+        } finally {
+            setLoading(false);
+        }
+    }
 
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                setState((prev) => ({ ...prev, loading: true }));
-                const response = await fetch(url);
-                if (!response.ok) {
-                    throw new Error(`Error: ${response.statusText}`);
-                }
-                const result = await response.json();
-                setState({ data: result, loading: false, error: null });
-            } catch (error: any) {
-                setState({ data: null, loading: false, error: error.message });
-            }
-        };
+        fetchData()
+    }, [url, page, query]);
 
-        fetchData();
-    }, [url]);
-
-    return state;
+    return { data, loading, error };
 }
